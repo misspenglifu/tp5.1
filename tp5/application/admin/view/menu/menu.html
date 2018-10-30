@@ -1,0 +1,192 @@
+
+<body>
+<div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">演示</a>
+        <a>
+            <cite>导航元素</cite></a>
+      </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+    <div class="layui-row">
+        {if !empty($permissions_exist) && in_array(1,$permissions_exist)}
+        <form class="layui-form layui-col-md12 x-so layui-form-pane"   action="" method="post">
+            <input type="hidden" name="_method" value="PUT" >
+            <input class="layui-input" placeholder="导航菜单名" name="menu_name" lay-verify="nikename">
+            <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon"></i>增加</button>
+        </form>
+        {/if}
+    </div>
+    <blockquote class="layui-elem-quote">每个tr 上有两个属性 cate-id='1' 当前分类id fid='0' 父级id ,顶级分类为 0，有子分类的前面加收缩图标<i class="layui-icon x-show" status='true'>&#xe623;</i></blockquote>
+    <xblock>
+        {if !empty($permissions_exist) && in_array(3,$permissions_exist)}
+        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+        {/if}
+        <span class="x-right" style="line-height:40px">共有数据：88 条</span>
+    </xblock>
+    <table class="layui-table layui-form">
+        <thead>
+        <tr>
+            <th width="20">
+                <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+            </th>
+            <th width="70">ID</th>
+            <th>栏目名</th>
+            <th width="50">排序</th>
+            <th width="50">状态</th>
+            <th width="220">操作</th>
+        </thead>
+        <tbody class="x-cate">
+        {foreach $list as $key=>$vo }
+        <tr cate-id='{$vo.level_id}' fid='{$vo.left_menu_pid}' >
+            <td>
+                <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{$vo.left_menu_id}'><i class="layui-icon">&#xe605;</i></div>
+            </td>
+            <td>{$vo.left_menu_id}</td>
+            <td>
+                {if $vo.left_menu_pid!=0 }
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <i class="layui-icon x-show" status='true'>&#xe623;</i>
+                {$vo.menu_name}
+                {else /}
+                <i class="layui-icon x-show" status='true'>&#xe623;</i>
+                {$vo.menu_name}
+                {/if}
+            </td>
+            <td><input type="text" class="layui-input x-sort" name="order" value="{$vo.level_id}"></td>
+            <td>
+                {if $vo.state==1 }
+                <input type="checkbox" name="switch"  value="{$vo.left_menu_id}"   lay-text="开启|停用" lay-filter="ifKeyDemo" checked="checked" lay-skin="switch" >
+                {else /}
+                <input type="checkbox" name="switch"  value="{$vo.left_menu_id}"   lay-text="开启|停用" lay-filter="ifKeyDemo"  lay-skin="switch" >
+                {/if}
+            </td>
+            <td class="td-manage">
+                {if !empty($permissions_exist) && in_array(2,$permissions_exist)}
+                <button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','menu_edit?id={$vo.left_menu_id}',600,400)" ><i class="layui-icon">&#xe642;</i>编辑</button>
+                {/if}
+                {if !empty($permissions_exist) && in_array(1,$permissions_exist)}
+                <button class="layui-btn layui-btn-warm layui-btn-xs"  onclick="x_admin_show('添加','menu_add?id={$vo.left_menu_id}',600,400)" ><i class="layui-icon">&#xe642;</i>添加子栏目</button>
+                {/if}
+                {if !empty($permissions_exist) && in_array(3,$permissions_exist)}
+                <button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="member_del(this,'{$vo.left_menu_id}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+                {/if}
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+</div>
+<style type="text/css">
+
+</style>
+<script>
+    layui.use(['form','layer'], function(){
+        $ = layui.jquery;
+        var form = layui.form
+                ,layer = layui.layer;
+
+        //自定义验证规则
+        form.verify({
+            nikename: function(value){
+                if(value.length < 2){
+                    return '昵称至少得2个字符啊';
+                }
+            }
+            ,pass: [/(.+){6,12}$/, '密码必须6到12位']
+            ,repass: function(value){
+                if($('#L_pass').val()!=$('#L_repass').val()){
+                    return '两次密码不一致';
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(sreach)', function(data){
+            var formData=$('.layui-form').serialize();
+            $.ajax({
+                type:'POST',
+                url: "menu",
+                data:formData,
+                dataType: "json",
+                success: function (msg) {
+                    var index =layer.alert("增加成功", {icon: 6},function () {
+                        // 获得frame索引
+                       // var index = parent.layer.getFrameIndex(window.name);
+                        //关闭当前frame
+                        parent.layer.close(index);
+                        window.location.reload();
+                    });
+                }
+            });
+            return false;
+        });
+    });
+
+    /*用户- 启用*/
+    layui.use('form', function(obj){
+        var form = layui.form
+                ,layer =layui.layer;
+        //监听短信开关
+        form.on('switch(ifKeyDemo)', function(data){
+            var id=$(this).val();
+            $.ajax({
+                type: 'POST',
+                url: "menu",
+                data:{val1:"a",id:id},
+                dataType: "json",
+                success: function (msg) {
+                    window.location.reload();
+                }
+            });
+        });
+    });
+
+    /*用户-删除*/
+    function member_del(obj,id){
+        layer.confirm('确认要删除吗？',function(index){
+            $.ajax({
+                type: 'POST',
+                url: "menu",
+                data:{val1:"c",id:id},
+                dataType: "json",
+                success: function (msg) {
+                    //发异步删除数据
+                    $(obj).parents("tr").remove();
+                    layer.msg('已删除!',{icon:1,time:1000});
+                    window.location.reload();
+                }
+            });
+        });
+    }
+
+
+
+    function delAll (argument) {
+
+        var data = tableCheck.getData();
+
+        layer.confirm('确认要删除吗？'+data,function(index){
+            //捉到所有被选中的，发异步进行删除
+            $.ajax({
+                type: 'POST',
+                url: "menu",
+                data:{val1:data},
+                dataType: "json",
+                success: function (msg) {
+                    //发异步删除数据
+                    layer.msg('删除成功', {icon: 1});
+                    $(".layui-form-checked").not('.header').parents('tr').remove();
+                    window.location.reload();
+                }
+            });
+        });
+    }
+</script>
+
+</body>
+
+</html>

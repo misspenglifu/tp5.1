@@ -1,0 +1,180 @@
+
+<body>
+<div class="x-body">
+    <form action="" method="post" class="layui-form layui-form-pane">
+        <div class="layui-form-item">
+            <label for="name" class="layui-form-label">
+                <span class="x-red">*</span>角色名
+            </label>
+            <div class="layui-input-inline">
+                {if !empty($listname)}
+                <input type="text" id="name" name="rolename" required="" value="{$listname.rolename}" lay-verify="required"
+                       autocomplete="off" class="layui-input">
+                {/if}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="name" class="layui-form-label">
+                <span class="x-red">*</span>管理员
+            </label>
+            <div class="layui-input-inline">
+                <select name="user_id" lay-filter="menulft" >
+                    {if !empty($list)}
+                    {foreach $list as $k=>$v }
+                    <option value="{$v.user_id}">{$v.name}</option>
+                    {/foreach}
+                    {/if}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">
+                拥有权限
+            </label>
+            <table  class="layui-table layui-input-block">
+                <tbody>
+                {if !empty($listm)}
+                {foreach $listm as $k=>$v }
+                <tr>
+                    <td class="dianji">
+                        {if in_array($v['left_menu_id'],$left_menu_id)}
+                        <input name="left_menu_id[]" lay-skin="primary" type="checkbox" checked="" value="{$v.left_menu_id}" title="{$v.menu_name}">
+                        {else/}
+                        <input name="left_menu_id[]" lay-skin="primary" type="checkbox" value="{$v.left_menu_id}" title="{$v.menu_name}">
+                        {/if}
+                    </td>
+                    <td class="zhidianji">
+                        <div class="layui-input-block">
+                            {foreach $v.zhi as $k1=>$v1 }
+                            {if in_array($v1['left_menu_zid'],$rights_management_id)}
+                            <input name="rights_management_id[]" lay-skin="primary" type="checkbox" checked="" title="{$v1.management_name}" value="{$v1.left_menu_zid}">
+                            {else/}
+                            <input name="rights_management_id[]" lay-skin="primary" type="checkbox" title="{$v1.management_name}" value="{$v1.left_menu_zid}">
+                            {/if}
+                            {if  !empty($operation[$v1['left_menu_zid']]) }
+                            {if in_array(1,$operation[$v1['left_menu_zid']])}
+                            <input name="operation[{$v1.left_menu_zid}][]" lay-skin="primary" type="checkbox" checked=""  title="{$v1.management_name}增加" value="1">
+                            {else/}
+                            <input name="operation[{$v1.left_menu_zid}][]" lay-skin="primary" type="checkbox" title="{$v1.management_name}增加" value="1">
+                            {/if}
+                            {else/}
+                            <input name="operation[{$v1.left_menu_zid}][]" lay-skin="primary" type="checkbox" title="{$v1.management_name}增加" value="1">
+                            {/if}
+
+                            {if  !empty($operation[$v1['left_menu_zid']]) }
+                            {if in_array(2,$operation[$v1['left_menu_zid']])}
+                            <input name="operation[{$v1.left_menu_zid}][]" lay-skin="primary" type="checkbox" checked=""  title="{$v1.management_name}修改" value="2">
+                            {else/}
+                            <input name="operation[{$v1.left_menu_zid}][]" lay-skin="primary" type="checkbox" title="{$v1.management_name}修改" value="2">
+                            {/if}
+                            {else/}
+                            <input name="operation[{$v1.left_menu_zid}][]" lay-skin="primary" type="checkbox" title="{$v1.management_name}修改" value="2">
+                            {/if}
+
+                            {if  !empty($operation[$v1['left_menu_zid']]) }
+                            {if in_array(3,$operation[$v1['left_menu_zid']])}
+                            <input name="operation[{$v1.left_menu_zid}][]" lay-skin="primary" type="checkbox" checked=""  title="{$v1.management_name}删除" value="3">
+                            {else/}
+                            <input name="operation[{$v1.left_menu_zid}][]" lay-skin="primary" type="checkbox" title="{$v1.management_name}删除" value="3">
+                            {/if}
+                            {else/}
+                            <input name="operation[{$v1.left_menu_zid}][]" lay-skin="primary" type="checkbox" title="{$v1.management_name}删除" value="3">
+                            {/if}
+                            <br/>
+                            {/foreach}
+                        </div>
+                    </td>
+                </tr>
+                {/foreach}
+                {/if}
+                </tbody>
+            </table>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label for="desc" class="layui-form-label">
+                描述
+            </label>
+            <div class="layui-input-block">
+                {if !empty($listname)}
+                <textarea placeholder="请输入内容" id="desc" name="described" class="layui-textarea">{$listname.described}</textarea>
+                {/if}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button class="layui-btn" lay-submit="" lay-filter="add">修改</button>
+        </div>
+    </form>
+</div>
+<script>
+    $('.dianji').click(function(){
+        var clas=$(this).children('div').is('.layui-form-checked');
+        if(clas==true){
+            $(this).siblings().children().children('div').addClass('layui-form-checked');
+            $(this).siblings().children().children('input').attr('checked','true');
+        }else{
+            $(this).siblings().children().children('div').removeClass('layui-form-checked');
+            $(this).siblings().children().children('input').removeAttr('checked');
+        }
+    });
+    $('.zhidianji').click(function(){
+        var clas=$(this).children().children('div').is('.layui-form-checked');
+        if(clas==true){
+            var fucals=$(this).siblings().children('div').is('.layui-form-checked');
+            if(fucals==false){
+                $(this).siblings().children('div').addClass('layui-form-checked');
+                $(this).siblings().children('input').attr('checked','true');
+            }
+        }else{
+            $(this).siblings().children('div').removeClass('layui-form-checked');
+            $(this).siblings().children('input').removeAttr('checked');
+        }
+    });
+
+    layui.use(['form','layer'], function(){
+        $ = layui.jquery;
+        var form = layui.form
+                ,layer = layui.layer;
+
+        //自定义验证规则
+        form.verify({
+            nikename: function(value){
+                if(value.length < 5){
+                    return '昵称至少得5个字符啊';
+                }
+            }
+            ,pass: [/(.+){6,12}$/, '密码必须6到12位']
+            ,repass: function(value){
+                if($('#L_pass').val()!=$('#L_repass').val()){
+                    return '两次密码不一致';
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(add)', function(data){
+            var formData=$('.layui-form').serialize();
+            $.ajax({
+                type:'POST',
+                url: "admin_editdd",
+                data:formData,
+                dataType: "json",
+                success: function (msg) {
+                    if(msg==1){
+                        var index =layer.alert("修改成功", {icon: 6},function () {
+                            // 获得frame索引
+                            //var index = parent.layer.getFrameIndex(window.name);
+                            //关闭当前frame
+                            parent.layer.close(index)
+                            parent.location.reload();
+                        });
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
+
+</body>
+
+</html>

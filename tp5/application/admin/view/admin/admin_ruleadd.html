@@ -1,0 +1,147 @@
+
+<body>
+<div class="x-body">
+    <form action="" method="post" class="layui-form layui-form-pane">
+        <div class="layui-form-item">
+            <label for="name" class="layui-form-label">
+                <span class="x-red">*</span>角色名
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="name" name="rolename" required="" lay-verify="required"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="name" class="layui-form-label">
+                <span class="x-red">*</span>管理员
+            </label>
+            <div class="layui-input-inline">
+                <select name="user_id" lay-filter="menulft" >
+                    {foreach $list as $k=>$v }
+                    <option value="{$v.user_id}">{$v.name}</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">
+                拥有权限
+            </label>
+            <table  class="layui-table layui-input-block">
+                <tbody>
+                {foreach $listm as $k=>$v }
+                <tr>
+                    <td class="dianji">
+                        <input name="left_menu_id[]" lay-skin="primary" type="checkbox" value="{$v.left_menu_id}" title="{$v.menu_name}">
+                    </td>
+                    <td class="zhidianji">
+                        <div class="layui-input-block">
+                            {foreach $v.zhi as $k1=>$v1 }
+                            <input name="rights_management_id[]" lay-skin="primary" type="checkbox" title="{$v1.management_name}" value="{$v1.left_menu_zid}">
+                            <input name="operation[{$v1.left_menu_zid}][]" lay-skin="primary" type="checkbox" title="{$v1.management_name}增加" value="1">
+                            <input name="operation[{$v1.left_menu_zid}][]" lay-skin="primary" type="checkbox" title="{$v1.management_name}修改" value="2">
+                            <input name="operation[{$v1.left_menu_zid}][]" lay-skin="primary" type="checkbox" title="{$v1.management_name}删除" value="3">
+                            <br/>
+                            {/foreach}
+                        </div>
+                    </td>
+                </tr>
+                {/foreach}
+                </tbody>
+            </table>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label for="desc" class="layui-form-label">
+                描述
+            </label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入内容" id="desc" name="described" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button class="layui-btn" lay-submit="" lay-filter="add">增加</button>
+        </div>
+    </form>
+</div>
+<script>
+    $('.dianji').click(function(){
+       var clas=$(this).children('div').is('.layui-form-checked');
+        if(clas==true){
+            $(this).siblings().children().children('div').addClass('layui-form-checked');
+            $(this).siblings().children().children('input').attr('checked','true');
+        }else{
+            $(this).siblings().children().children('div').removeClass('layui-form-checked');
+            $(this).siblings().children().children('input').attr('checked','false');
+        }
+
+
+    });
+    $('.zhidianji').click(function(){
+        var clas=$(this).children().children('div').is('.layui-form-checked');
+        if(clas==true){
+            var fucals=$(this).siblings().children('div').is('.layui-form-checked');
+            if(fucals==false){
+                $(this).siblings().children('div').addClass('layui-form-checked');
+                $(this).siblings().children('input').attr('checked','true');
+            }
+        }else{
+            $(this).siblings().children('div').removeClass('layui-form-checked');
+            $(this).siblings().children('input').attr('checked','false');
+        }
+    });
+
+    layui.use(['form','layer'], function(){
+        $ = layui.jquery;
+        var form = layui.form
+                ,layer = layui.layer;
+
+        //自定义验证规则
+        form.verify({
+            nikename: function(value){
+                if(value.length < 5){
+                    return '昵称至少得5个字符啊';
+                }
+            }
+            ,pass: [/(.+){6,12}$/, '密码必须6到12位']
+            ,repass: function(value){
+                if($('#L_pass').val()!=$('#L_repass').val()){
+                    return '两次密码不一致';
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(add)', function(data){
+            var formData=$('.layui-form').serialize();
+            $.ajax({
+                type:'POST',
+                url: "admin_ruleadd",
+                data:formData,
+                dataType: "json",
+                success: function (msg) {
+                    if(msg==1){
+                        var index = layer.alert("增加成功", {icon: 6},function () {
+                            // 获得frame索引
+                            //var index = parent.layer.getFrameIndex(window.name);
+                            //关闭当前frame
+                            parent.layer.close(index)
+                            parent.location.reload();
+                        });
+                    }else {
+                        var index =layer.alert("角色不能重复添加!", {icon: 5},function () {
+                            // 获得frame索引
+                            //var index = parent.layer.getFrameIndex(window.name);
+                            //关闭当前frame
+                            parent.layer.close(index)
+                            parent.location.reload();
+                        });
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+
+</html>

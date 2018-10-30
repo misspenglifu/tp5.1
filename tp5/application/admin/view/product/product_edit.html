@@ -1,0 +1,370 @@
+
+
+<body>
+<div class="x-body">
+    <form class="layui-form"  id="fm" method="post"  enctype="multipart/form-data">
+        <input type="hidden" name="_method" value="PUT" >
+        <div class="layui-form-item">
+            <label for="username" class="layui-form-label">
+                <span class="x-red">*</span>产品标题
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="username" name="title" value="{$list.title}" required="" lay-verify="nikename"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                <span class="x-red">*</span>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="market_price" class="layui-form-label">
+                <span class="x-red">*</span>是否上架
+            </label>
+            <div class="layui-input-block" style="width: 190px">
+                <select name="shelves" lay-verify="required">
+                    {if $list.shelves==1}
+                    <option value="1" selected>上架</option>
+                    {else /}
+                    <option value="2" selected>下架</option>
+                    {/if}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="market_price" class="layui-form-label">
+                <span class="x-red">*</span>产品分类
+            </label>
+            <div class="layui-input-block" style="width: 190px">
+                <select name="classifiy_id" lay-verify="required">
+                    {if $list.classifiy_id==1}
+                    <option value="1">1</option>
+                    {else /}
+                    <option value="2">2</option>
+                    {/if}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="initial_price" class="layui-form-label">
+                <span class="x-red">*</span>产品进价
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="initial_price" name="initial_price" value="{$list.initial_price}" required="" lay-verify="required"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                <span class="x-red">*</span>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="price" class="layui-form-label">
+                <span class="x-red">*</span>产品卖价
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="price" name="sell_price" value="{$list.sell_price}" required="" lay-verify="required"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                <span class="x-red">*</span>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="market_price" class="layui-form-label">
+                <span class="x-red">*</span>产品市场价
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="market_price" name="market_price" value="{$list.market_price}" required="" lay-verify="required"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                <span class="x-red">*</span>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="postage" class="layui-form-label">
+                <span class="x-red">*</span>邮费
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="postage" name="postage" value="{$list.postage}" required="" lay-verify="required"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                <span class="x-red">*</span>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="sales" class="layui-form-label">
+                <span class="x-red">*</span>销量
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="sales" name="sales" value="{$list.sales}"  required="" lay-verify="required"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                <span class="x-red">*</span>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="market_price" class="layui-form-label">
+                <span class="x-red">*</span>产品详情
+            </label>
+            <div class="layui-input-block">
+                <div class="editor">
+                    <!--<script id="editor" value="{$list.details}" type="text/plain" style="height:500px;" name="details"></script>-->
+                    <textarea  id="editor" type="text/plain" style="height:500px;" name="details">{$list.details}</textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="market_price" class="layui-form-label">
+                <span class="x-red">*</span>产品品牌
+            </label>
+            <div class="layui-input-block" style="width: 190px">
+                <select name="brand" lay-verify="required">
+                    {if $list.brand==1}
+                    <option value="1">自营</option>
+                    {else /}
+                    <option value="2">阿迪</option>
+                    {/if}
+                </select>
+            </div>
+        </div>
+        <style>
+            #main-content .images_list {padding-top:30px; overflow:hidden;}
+            #main-content .images_list li{list-style: none; margin-left:15px; padding:0; position: relative;width:100px; height:100px;float:left;}
+            #main-content .images_list li img{width:100px;height:100px; overflow:hidden;}
+            #main-content  .images_list li div{width:100px;height:100px;
+                display: none;
+                position: absolute;
+                left: 0;top: 0;
+                background-color: rgba(100,140,120,0.4);
+                float: left;}
+            #main-content  .images_list li div img{ width: 30px;
+                height: 30px;
+                position: absolute;
+                top:-15px;right:-15px;
+            }
+            #main-content  .images_list li:hover div{display: block; cursor: pointer;}
+        </style>
+        <div class="layui-form-item">
+            <label for="market_price" class="layui-form-label">
+                <span class="x-red">*</span>产品图片
+            </label>
+            <div class="layui-input-block" id="main-content">
+                <p>
+                    <label>产品图片上传</label>
+                    <input type="file" id="file"   name="images[]" multiple="multiple" />
+                <div>
+                    <ul class="images_list">
+                        {foreach $list.original_path as $k=>$v }
+                        <li>
+                            <img src="__IM__{$v}" />
+                            <input type='hidden' value='{$k}' name='check_image[{$k}]' />
+                            <div><img class='delete' src='__PUBLIC__/fancy_close.png' /></div>
+                        </li>
+                        {/foreach}
+                    </ul>
+                    <label>颜色库存价格重量</label>
+                    <a>点击图片生成库存输入框</a><br/>
+                    <ul class="repertory">
+                        {foreach $list.parameter_new as $k=>$v }
+                        <li>
+                            颜色<input  type='text' value="{$v[0]}"    name='parameter[color][]' />
+                            库存<input  type='text' value="{$v[1]}"      name='parameter[inventory][]' />
+                            价格<input  type='text' value="{$v[2]}"      name='parameter[price][]' />
+                            重量<input  type='text' value="{$v[3]}"     name='parameter[weight][]' />
+                            规格<input  type='text' value="{$v[4]}"      name='parameter[specifications][]' />
+                        </li>
+                        {/foreach}
+                    </ul>
+                </div>
+                </p>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+            </label>
+            <input type="hidden" name="product_id" value="{$list.product_id}"/>
+            <!--<input type="submit" value="增加"  class="layui-btn"  />-->
+            <button  class="layui-btn" lay-filter="add" lay-submit="">
+            增加
+            </button>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    //处理file input加载的图片文件
+    $(document).ready(function(e) {
+        //判断浏览器是否有FileReader接口
+        if(typeof FileReader =='undefined'){
+            alert("抱歉你的浏览器版本太低请更换浏览器上传!");
+        }else{
+            //多图上传 input file控件里指定multiple属性 e.target是dom类型
+            $("input[type='file']").change(function(e){
+                var j=0;/* 定义变量j表示图片下标 */
+                for(var i=0;i<e.target.files.length;i++){
+                    var file = e.target.files.item(i);
+                    //允许文件MIME类型 也可以在input标签中指定accept属性
+                    //console.log(/^image\/.*$/i.test(file.type));
+                    if(!(/^image\/.*$/i.test(file.type)))
+                    {
+                        continue;      //不是图片 就跳出这一次循环
+                    }
+                    //实例化FileReader API
+                    var freader = new FileReader();
+                    freader.readAsDataURL(file);
+                    freader.onload=function(e)
+                    {
+                        var str="";
+                        str+="<li>";
+                        str+="<img src='"+e.target.result+"' />";
+                        str+="<input type='hidden' value='"+j+"' name='check_image_new[]' />";
+                        str+="<div><img class='delete' src='__PUBLIC__/fancy_close.png' /></div>";
+                        str+="</li>";
+                        $(".images_list").append(str);
+                        j++
+                    }
+                }
+            });
+        }
+    });
+</script>
+<script>
+    $(document).on("click",".delete",function(){
+        $(this).parent().parent().remove();
+        $(".repertory").children(":last").remove();
+    });
+
+
+    $(document).on("click",".images_list li",function(){
+        var length=$(".images_list li").length;
+        var length1=$(".repertory li").length;
+        var j=0;
+        if(length1<length){
+            var lengthjie=length-length1;
+            for(var i=0;i<lengthjie;i++){
+                var str="";
+                str+="<li>";
+                str+="颜色<input  type='text'     name='parameter[color][]' />";
+                str+="库存<input  type='text'     name='parameter[inventory][]' />";
+                str+="价格<input  type='text'     name='parameter[price][]' />";
+                str+="重量<input  type='text'     name='parameter[weight][]' />";
+                str+="规格<input  type='text'     name='parameter[specifications][]' />";
+                str+="</li>";
+                $(".repertory").append(str);
+            }
+        }
+    });
+</script>
+<script>
+    //实例化编辑器
+    //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+    var ue = UE.getEditor('editor');
+
+
+    function isFocus(e){
+        alert(UE.getEditor('editor').isFocus());
+        UE.dom.domUtils.preventDefault(e)
+    }
+    function setblur(e){
+        UE.getEditor('editor').blur();
+        UE.dom.domUtils.preventDefault(e)
+    }
+    function insertHtml() {
+        var value = prompt('插入html代码', '');
+        UE.getEditor('editor').execCommand('insertHtml', value)
+    }
+    function createEditor() {
+        enableBtn();
+        UE.getEditor('editor');
+    }
+</script>
+<script>
+    layui.use(['form','layer'], function(){
+        $ = layui.jquery;
+        var form = layui.form
+                ,layer = layui.layer;
+
+        //自定义验证规则
+        form.verify({
+            nikename: function(value){
+                if(value.length < 5){
+                    return '昵称至少得5个字符啊';
+                }
+            }
+            ,pass: [/(.+){6,12}$/, '密码必须6到12位']
+            ,repass: function(value){
+                if($('#L_pass').val()!=$('#L_repass').val()){
+                    return '两次密码不一致';
+                }
+            }
+        });
+
+//        //监听提交
+//        form.on('submit(add)', function(data){
+//            var formData=$('.layui-form').serialize();
+//            var upload = layui.upload;
+//            $.ajax({
+//                type:'POST',
+//                url: "product_add",
+//                data:{formData:formData,upload:upload},
+//                dataType: "json",
+//                success: function (msg) {
+//                    layer.alert("增加成功", {icon: 6},function () {
+//                        // 获得frame索引
+//                        var index = parent.layer.getFrameIndex(window.name);
+//                        //关闭当前frame
+//                        parent.layer.close(index);
+//                        parent.location.reload();
+//                    });
+//                }
+//            });
+//            return false;
+//        });
+    });
+</script>
+<script>
+    layui.use(['form','layer'],function () {
+        $ = layui.jquery;
+        var form = layui.form
+                ,layer = layui.layer;
+        //监听提交
+        form.on('submit(add)', function(data){
+            var zhi=$(".repertory li").length;
+            if(zhi==0){
+                var index =layer.alert("请点击图片!", {icon: 5},function () {
+                    // 获得frame索引
+                    //var index = parent.layer.getFrameIndex(window.name);
+                    //关闭当前frame
+                    window.layer.close(index)
+                });
+                return false;
+            }
+            var formData = new FormData($('#fm')[0]);
+            for(var i=0; i<$('#file')[0].files.length;i++){
+                formData.append('file[]', $('#file')[0].files[i]);
+            }
+            $.ajax({
+                url : 'product_edit',
+                type : 'post',
+                async: false,
+                data : formData,
+                cache:false,
+                contentType: false,
+                processData: false,
+                success : function(data) {
+                    layer.alert("增加成功", {icon: 6},function () {
+                        // 获得frame索引
+                        var index = parent.layer.getFrameIndex(window.name);
+                        //关闭当前frame
+                        parent.layer.close(index);
+                    });
+                    parent.location.reload();
+                }
+            });
+        });
+    });
+</script>
+</body>
+
+</html>

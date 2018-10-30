@@ -1,0 +1,208 @@
+
+
+
+<body>
+<div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a>欢迎管理员</a>
+        <a>{$name}</a>
+        <a>
+            <cite>{$time}</cite></a>
+      </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12  layui-form-pane">
+            <div class="layui-form-item" id="x-city">
+                <label class="layui-form-label">你的位置</label>
+                <div class="layui-input-inline">
+                    <select name="province" lay-filter="province" class="provinces">
+                        <option value="">请选择省</option>
+                    </select>
+                </div>
+                <div class="layui-input-inline">
+                    <select name="city" lay-filter="city" class="citys">
+                        <option value="">请选择市</option>
+                    </select>
+                </div>
+                <!--<div class="layui-input-inline">-->
+                    <!--<select name="area" lay-filter="area">-->
+                        <!--<option value="">请选择县/区</option>-->
+                    <!--</select>-->
+                <!--</div>-->
+            </div>
+        </form>
+    </div>
+    <blockquote class="layui-elem-quote"> </blockquote>
+    <input  type="hidden" class="area"  value="1">
+    <input  type="hidden" class="province"  value="{$quyu.province}">
+    <input  type="hidden" class="city"  value="{$quyu.city}">
+    <!--<pre class="layui-code" lay-title="JavaScript" lay-skin="notepad">-->
+    <!--//xcity城市插件 基于于jquery与layui form 模块，使用之前先确认这两者是否引入-->
+    <!--//插件文件为 xcity.js,引入-->
+    <!--select lay-filter 属性值 为必须 "province/city/area"-->
+    <!--//初始化-->
+    <!--$('#x-city').xcity();-->
+    <!--//传默认值-->
+    <!--$('#x-city').xcity('广东','广州市','东山区');-->
+    <!--</pre>-->
+</div>
+<div id="main" style="height:700px"></div>
+<script src="__PUBLIC__/js/3.3.2echarts.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="__PUBLIC__/js/xcity.js"></script>
+<script src="__PUBLIC__/js/china.js" charset="utf-8" ></script>
+<script src="__PUBLIC__/js/welcomeapp.js" charset="utf-8" ></script>
+<script src="__PUBLIC__/js/citymap.js" charset="utf-8" ></script>
+<script>
+    layui.use(['form','code'], function(){
+        //form = layui.form;
+         form = layui.form,
+                layer = layui.layer;
+        layui.code();
+        var province=$('.province').val();
+        var city=$('.city').val();
+        $('#x-city').xcity(province,city,'东西湖区');
+
+        form.on('select(province)', function(data){
+            $("#main").attr('id','newmain')
+            //alert(data.value)
+            var shengfen=data.value;
+            console.log(data.elem); //得到select原始DOM对象
+            console.log(data.value); //得到被选中的值
+            console.log(data.othis); //得到美化后的DOM对象
+            $.getJSON('http://www.penglifu.com/admintj/map/province/'+ provinces[shengfen] +'.json', function(data){
+                echarts.registerMap( shengfen, data);
+                var d = [];
+                for( var i=0;i<data.features.length;i++ ){
+                    d.push({
+                        name:data.features[i].properties.name
+                    })
+                }
+                renderMap(shengfen,d);
+            });
+        });
+
+        form.on('select(city)', function(data){
+            //alert(data.value)
+            var shengfen=data.value;
+            console.log(data.elem); //得到select原始DOM对象
+            console.log(data.value); //得到被选中的值
+            console.log(data.othis); //得到美化后的DOM对象
+            //显示县级地图
+            $.getJSON('http://www.penglifu.com/admintj/map/city/'+ cityMap[shengfen] +'.json', function(data){
+                echarts.registerMap( shengfen, data);
+                var d = [];
+                for( var i=0;i<data.features.length;i++ ){
+                    d.push({
+                        name:data.features[i].properties.name
+                    })
+                }
+                renderMap(shengfen,d);
+            });
+        });
+    });
+
+    function renderMap(map,data){
+
+        option.title.subtext = map;
+        option.series = [
+            {
+                name: map,
+                type: 'map',
+                mapType: map,
+                roam: false,
+                nameMap:{
+                    'china':'中国'
+                },
+                label: {
+                    normal:{
+                        show:true,
+                        textStyle:{
+                            color:'#0078fe',
+                            fontSize:13
+                        }
+                    },
+                    emphasis: {
+                        show: true,
+                        textStyle:{
+                            color:'#fff',
+                            fontSize:13
+                        }
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        areaColor: '#b3b3b3',
+                        borderColor: 'dodgerblue'
+                    },
+                    emphasis: {
+                        areaColor: '#ec4545'
+                    }
+                },
+                data:data
+            }
+        ];
+        //渲染地图
+        chart.setOption(option);
+        var zongchouproduct_id=$('.area').val();
+        var myData=[];
+        var myTemp;
+        var areas=[];
+        var area;
+        $.ajax({
+            type:'POST',
+            data: {zongchouproduct_id:zongchouproduct_id},
+            url: 'welcome',
+            dataType:'json',
+            success: function(result){
+                $('.area').val(2);
+                for(var i=0;i<result.length;i++){
+                    myTemp={name:result[i],selected:true,value:i};
+                    myData.push(myTemp);
+                }
+                for(var i=0;i<result.length;i++){
+                    area={area:result[i]};
+                    areas.push(area);
+                }
+                chart.setOption({
+                    tooltip : {
+                        trigger: 'item',
+                        formatter:function (params,ticket,callback){
+                            var pna = params.name;
+                            var res = '';
+                            for(var i = 0;i<areas.length;i++){
+                                if(areas[i].area == pna){
+                                    res ='你在'+'<i>'+areas[i].area+'</i>';//设置自定义数据的模板，这里的模板是图片
+                                    break;
+                                }else{
+                                    res ='<i>'+pna+'</i>';//设置自定义数据的模板，这里的模板是图片
+                                }
+                            }
+                            setTimeout(function (){
+                                // 仅为了模拟异步回调
+                                callback(ticket, res);//回调函数，这里可以做异步请求加载的一些代码
+                            }, 1)
+                            return 'loading';
+                        }
+                    },
+                    series: [{
+                        data:myData
+                    }]
+                });
+            }
+        })
+
+    }
+
+
+
+
+
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,246 @@
+
+
+<body>
+<div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">演示</a>
+        <a>
+            <cite>导航元素</cite></a>
+      </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+    <div class="layui-row">
+        {if !empty($permissions_exist) && in_array(1,$permissions_exist)}
+        <form class="layui-form layui-col-md12 x-so layui-form-pane"    action="" method="post">
+            <input type="hidden" name="_method" value="PUT" >
+            <input class="layui-input" placeholder="分类名" name="classify_name" lay-verify="nikename">
+            <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon"></i>增加</button>
+        </form>
+        {/if}
+    </div>
+    <xblock>
+        {if !empty($permissions_exist) && in_array(3,$permissions_exist)}
+        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+        {/if}
+        <span class="x-right" style="line-height:40px">共有数据：88 条</span>
+    </xblock>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>
+                <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+            </th>
+            <th>ID</th>
+            <th>分类名</th>
+            <th>状态</th>
+            <th>操作</th>
+        </thead>
+        <tbody>
+        {if !empty($list)}
+        {volist name='list' id='user'}
+        <tr>
+            <td>
+                <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{$user.left_menu_id}'><i class="layui-icon">&#xe605;</i></div>
+            </td>
+            <td>{$user.left_menu_id}</td>
+            <td>{$user.menu_name}</td>
+            <td class="td-status">
+                {if condition="$user.state==1"}
+                <span class="layui-btn layui-btn-normal layui-btn-mini">已启用</span></td>
+            {else /}
+            <span class="layui-btn layui-btn-normal layui-btn-mini  layui-btn-disabled  ">已启用</span></td>
+            {/if}
+            <td class="td-manage">
+                {if condition="$user.state==1"}
+                <a onclick="member_stop(this,'{$user.left_menu_id}')" href="javascript:;"  title="停用">
+                    <i class="layui-icon">&#xe62f;</i>
+                </a>
+                {else /}
+                <a onclick="member_stop(this,'{$user.left_menu_id}')" href="javascript:;"  title="启用">
+                    <i class="layui-icon">&#xe601;</i>
+                </a>
+                {/if}
+                <!--<a title="编辑"  onclick="x_admin_show('编辑','admin_edit.html')" href="javascript:;">-->
+                    <!--<i class="layui-icon">&#xe642;</i>-->
+                <!--</a>-->
+                {if !empty($permissions_exist) && in_array(3,$permissions_exist)}
+                <a title="删除" onclick="member_del(this,'{$user.left_menu_id}')" href="javascript:;">
+                    <i class="layui-icon">&#xe640;</i>
+                </a>
+                {/if}
+            </td>
+        </tr>
+        {/volist}
+        {/if}
+        </tbody>
+    </table>
+    <div class="page">
+        <!--<div>-->
+            <!--<a class="prev" href="">&lt;&lt;</a>-->
+            <!--<a class="num" href="">1</a>-->
+            <!--<span class="current">2</span>-->
+            <!--<a class="num" href="">3</a>-->
+            <!--<a class="num" href="">489</a>-->
+            <!--<a class="next" href="">&gt;&gt;</a>-->
+        <!--</div>-->
+        {if !empty($page)}
+        {$page|raw}
+        {/if}
+    </div>
+
+</div>
+<script>
+    layui.use(['form','layer'], function(){
+        $ = layui.jquery;
+        var form = layui.form
+                ,layer = layui.layer;
+
+        //自定义验证规则
+        form.verify({
+            nikename: function(value){
+                if(value.length < 2){
+                    return '昵称至少得2个字符啊';
+                }
+            }
+            ,pass: [/(.+){6,12}$/, '密码必须6到12位']
+            ,repass: function(value){
+                if($('#L_pass').val()!=$('#L_repass').val()){
+                    return '两次密码不一致';
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(sreach)', function(data){
+            var formData=$('.layui-form').serialize();
+            $.ajax({
+                type:'POST',
+                url: "admin_cate",
+                data:formData,
+                dataType: "json",
+                success: function (msg) {
+                    var index =layer.alert("增加成功", {icon: 6},function () {
+                        // 获得frame索引
+                        //var index = parent.layer.getFrameIndex(window.name);
+                        //关闭当前frame
+                        parent.layer.close(index);
+                        window.location.reload();
+                    });
+                }
+            });
+            return false;
+        });
+    });
+
+
+
+
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#start' //指定元素
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#end' //指定元素
+        });
+    });
+
+    /*用户-停用*/
+    function member_stop(obj,id){
+        if($(obj).attr('title')=='停用'){
+            layer.confirm('确认要停用吗？',function(index){
+                if($(obj).attr('title')=='停用'){
+                    //发异步把用户状态进行更改
+                    $.ajax({
+                        type:'POST',
+                        url: "admin_cate",
+                        data:{val1:"b",id:id},
+                        dataType: "json",
+                        success: function (msg) {
+                            $(obj).attr('title','启用');
+                            $(obj).find('i').html('&#xe62f;');
+                            $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停用');
+                            layer.msg('已停用!',{icon: 5,time:1000});
+                            window.location.reload();
+                        }
+                    });
+                }
+            });
+        }else{
+            layer.confirm('确认要启用吗？',function(index){
+                if($(obj).attr('title')=='启用') {
+                    $.ajax({
+                        type: 'POST',
+                        url: "admin_cate",
+                        data:{val1:"a",id:id},
+                        dataType: "json",
+                        success: function (msg) {
+                            $(obj).attr('title', '停用');
+                            $(obj).find('i').html('&#xe601;');
+
+                            $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
+                            layer.msg('已启用!', {
+                                icon: 5,
+                                time: 1000
+                            });
+                            window.location.reload();
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    /*用户-删除*/
+    function member_del(obj,id){
+        layer.confirm('确认要删除吗？',function(index){
+            $.ajax({
+                type: 'POST',
+                url: "admin_cate",
+                data:{val1:"c",id:id},
+                dataType: "json",
+                success: function (msg) {
+                    //发异步删除数据
+                    $(obj).parents("tr").remove();
+                    layer.msg('已删除!',{icon:1,time:1000});
+                    window.location.reload();
+                }
+            });
+        });
+    }
+
+
+
+
+    function delAll (argument) {
+
+        var data = tableCheck.getData();
+
+        layer.confirm('确认要删除吗？'+data,function(index){
+            //捉到所有被选中的，发异步进行删除
+            $.ajax({
+                type: 'POST',
+                url: "menu",
+                data:{val1:data},
+                dataType: "json",
+                success: function (msg) {
+                    //发异步删除数据
+                    layer.msg('删除成功', {icon: 1});
+                    $(".layui-form-checked").not('.header').parents('tr').remove();
+                    window.location.reload();
+                }
+            });
+        });
+    }
+</script>
+
+</body>
+
+</html>
